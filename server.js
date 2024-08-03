@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -6,10 +5,10 @@ const rateLimit = require('express-rate-limit');
 const geoip = require('geoip-lite');
 const fs = require('fs');
 const https = require('https');
+const http = require('http');
 
 const app = express();
-const PORT = process.env.PORT || 8080;
-const HOST = process.env.HOST || '0.0.0.0';
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -24,19 +23,27 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Ruta para manejar solicitudes y obtener la IP del cliente
-app.get('/ip', (req, res) => {
+app.get('/', (req, res) => {
   const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   const geo = geoip.lookup(clientIp);
   res.json({ ip: clientIp, geo });
 });
 
-// Lee los certificados SSL
-const sslOptions = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
-};
+// Verifica si los certificados SSL existen
+const keyPath = 'key.pem';
+const certPath = 'cert.pem';
 
-// Crea el servidor HTTPS
-https.createServer(sslOptions, app).listen(PORT, HOST, () => {
-  console.log(`Server is running on https://${HOST}:${PORT}`);
-});
+if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+  const sslOptions = {
+    key: fs.readFileSync(keyPath),
+    cert: fs.readFileSync(certPath)
+  };
+
+  https.createServer(sslOptions, app).listen(PORT, () => {
+    console.log(`Server is running on https://localhost:${PORT}`);
+  });
+} else {
+  http.createServer(app).listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
+}
