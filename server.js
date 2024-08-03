@@ -21,7 +21,7 @@ app.use(morgan('combined'));
 const limiter = rateLimit({
   windowMs: 3 * 60 * 1000, // 3 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again after 15 minutes',
+  message: 'm15tmny',
   keyGenerator: (req) => {
     return req.ip;
   }
