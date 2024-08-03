@@ -7,6 +7,6 @@ services:
       args:
         HOST: ${HOST}
     ports:
-      - "8080:8080"
+      - "3122:3122"
     env_file:
       - .env

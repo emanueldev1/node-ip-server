@@ -21,7 +21,7 @@ ARG HOST
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout key.pem -out cert.pem -subj "/CN=$HOST"
 
 # Expon el puerto que la aplicación utilizará
-EXPOSE 8080
+EXPOSE 3122
 
 # Comando para ejecutar la aplicación
 CMD ["node", "server.js"]
