@@ -10,15 +10,18 @@ const http = require('http');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Configura trust proxy
+app.set('trust proxy', true);
+
 app.use(cors());
 app.use(express.json());
 app.use(morgan('combined'));
 
 // Configura el rate limit
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 3 * 60 * 1000, // 3 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again after 15 minutes'
+  message: 'Too many requests from this IP, please try again after 3 minutes'
 });
 app.use(limiter);
 
