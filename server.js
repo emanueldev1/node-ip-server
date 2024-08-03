@@ -1,12 +1,15 @@
-// server.js
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const geoip = require('geoip-lite');
+const fs = require('fs');
+const https = require('https');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+const HOST = process.env.HOST || 'localhost';
 
 app.use(cors());
 app.use(express.json());
@@ -27,6 +30,13 @@ app.get('/ip', (req, res) => {
   res.json({ ip: clientIp, geo });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Lee los certificados SSL
+const sslOptions = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
+
+// Crea el servidor HTTPS
+https.createServer(sslOptions, app).listen(PORT, HOST, () => {
+  console.log(`Server is running on https://${HOST}:${PORT}`);
 });
